@@ -6,15 +6,15 @@ phases:
   pre_build:
     commands:
       - echo logging in to AWS ECR...
-      - $(aws ecr get-login --no-include-email --region us-west-2)
+      - $(aws ecr get-login --no-include-email --region eu-west-2)
   build:
     commands:
       - echo build Docker image on `date`
       - cd src
-      - docker build -t sample-express-app:latest .
-      - docker tag sample-express-app:latest <your-ecr-url>/sample-express-app:latest
+      - docker-compose build -t devops-project:latest .
+      - docker-compose tag devops-project:latest 532004891226.dkr.ecr.eu-west-2.amazonaws.com/devops-project:latest
   post_build:
     commands:
       - echo build Docker image complete `date`
       - echo push latest Docker images to ECR...
-      - docker push <your-ecr-url>/sample-express-app:latest
+      - docker-compose push 532004891226.dkr.ecr.eu-west-2.amazonaws.com/devops-project:latest
