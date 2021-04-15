@@ -1,5 +1,5 @@
 variable "image_name" {
-  type = "string"
+  type = string
 }
 
 module "codecommit-cicd" {
@@ -49,17 +49,17 @@ POLICY
 }
 
 output "repo_url" {
-  depends_on = ["module.codecommit-cicd"]
+  depends_on = [module.codecommit-cicd]
   value      = "${module.codecommit-cicd.clone_repo_https}"
 }
 
 output "codepipeline_role" {
-  depends_on = ["module.codecommit-cicd"]
+  depends_on = [module.codecommit-cicd]
   value      = "${module.codecommit-cicd.codepipeline_role}"
 }
 
 output "codebuild_role" {
-  depends_on = ["module.codecommit-cicd"]
+  depends_on = [module.codecommit-cicd]
   value      = "${module.codecommit-cicd.codebuild_role}"
 }
 
