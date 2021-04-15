@@ -1,3 +1,11 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 3.0"
+    }
+  }
+}
 variable "image_name" {
   type = string
 }
@@ -5,9 +13,9 @@ variable "image_name" {
 module "codecommit-cicd" {
   source                    = "git::https://github.com/o3cloudng/devops-project.git?ref=main"
   repo_name                 = "devops-project"                                              # Required
-  organization_name         = "o3cloudng"                                            # Required
+  organization_name         = "o3cloudng"                                                   # Required
   repo_default_branch       = "main"                                                        # Default value
-  aws_region                = "af-south-1"                                                  # Default value
+  aws_region                = "eu-west-2"                                                   # Default value
   char_delimiter            = "-"                                                           # Default value
   environment               = "dev"                                                         # Default value
   build_timeout             = "5"                                                           # Default value
@@ -20,12 +28,12 @@ module "codecommit-cicd" {
 }
 
 resource "aws_ecr_repository" "image_repository" {
-  name = "${var.image_name}"
+  name = var.image_name
 }
 
 resource "aws_iam_role_policy" "codebuild_policy" {
   name = "serverless-codebuild-automation-policy"
-  role = "${module.codecommit-cicd.codebuild_role_name}"
+  role = module.codecommit-cicd.codebuild_role_name
 
   policy = <<POLICY
 {
@@ -50,20 +58,20 @@ POLICY
 
 output "repo_url" {
   depends_on = [module.codecommit-cicd]
-  value      = "${module.codecommit-cicd.clone_repo_https}"
+  value      = module.codecommit-cicd.clone_repo_https
 }
 
 output "codepipeline_role" {
   depends_on = [module.codecommit-cicd]
-  value      = "${module.codecommit-cicd.codepipeline_role}"
+  value      = module.codecommit-cicd.codepipeline_role
 }
 
 output "codebuild_role" {
   depends_on = [module.codecommit-cicd]
-  value      = "${module.codecommit-cicd.codebuild_role}"
+  value      = module.codecommit-cicd.codebuild_role
 }
 
 output "ecr_image_respository_url" {
-  depends_on = ["${aws_ecr_repository.image_repository}"]
-  value      = "${aws_ecr_repository.image_repository.repository_url}"
+  depends_on = [aws_ecr_repository.image_repository]
+  value      = aws_ecr_repository.image_repository.repository_url
 }
