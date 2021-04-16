@@ -1,2 +1,6 @@
-# aws-ecr-codepipeline-demo
-This repository demonstrates how you can use Terraform to provision a AWS CodePipeline &amp; CodeBuild setup that builds and pushes Docker containers to AWS ECR.
+# DEVOPS PROJECT
+**Qusetions**
+
+- [App](https://github.com/o3cloudng/devops-project/app)
+- [Infra-deploy](https://github.com/o3cloudng/devops-project/infra-deploy)
+- [Infra-deploy](https://github.com/o3cloudng/devops-project/infra-deploy)

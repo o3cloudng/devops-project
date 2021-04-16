@@ -1,0 +1,36 @@
+---
+# yamllint disable rule:line-length
+version: 0.2
+
+env:
+  variables:
+    IMAGE_REPO_NAME: "devops-project"
+    AWS_ACCOUNT_ID: "532004891226"
+    AWS_DEFAULT_REGION: "eu-west-2"
+  parameter-store:
+    IMAGE_TAG: "/devops-project/buildnumber"
+
+phases:
+  pre_build:
+    commands:
+      - IMAGE_TAG=$((IMAGE_TAG + 1 ))
+      - export IMAGE_TAG=$IMAGE_TAG
+      - add-apt-repository ppa:jonathonf/python-3.6
+      - apt-get -y update
+      - apt-get install -y python3.6
+      - pip3 install awscli
+      - echo Logging in to Amazon ECR...
+      - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - echo $IMAGE_REPO_NAME:$IMAGE_TAG
+      - docker-compose build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
+      - docker-compose tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker image...
+      - docker-compose push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
+      - aws ssm put-parameter --name "/devops-project/buildnumber" --type String --value $IMAGE_TAG --overwrite
