@@ -4,3 +4,4 @@
 
 infra-deploy/.terraform.lock.hcl
 README.md
+infra-deploy/terraform/terraform.tfvars
